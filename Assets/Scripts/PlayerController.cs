@@ -3,14 +3,60 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    
+
+    public float speed = 20f;
+    private InputAction moveAction;
+    private InputAction shootAction;
+    public int xRange = 10;
+
+    public GameObject foodPrefab;
+
     private void Awake()
     {
-
+        moveAction = InputSystem.actions.FindAction("Move");
+        shootAction = InputSystem.actions.FindAction("Shoot");
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+        var hInput = moveAction.ReadValue<Vector2>().x;
+        transform.Translate(hInput * speed * Time.deltaTime * Vector3.right);
+        
+        if (transform.position.x < -xRange)
+        {
+            transform.position = new Vector3(-xRange,transform.position.y,transform.position.z);
+        }
+
+        if (transform.position.x > xRange)
+        {
+            transform.position = new Vector3(xRange, transform.position.y,transform.position.z);
+        }
+
+        
+    }
+    private void OnDrawGizmos()
+    {
+
+        Gizmos.color = Color.lightBlue;
+        Gizmos.DrawWireSphere(transform.position,1f);
+        Gizmos.color= Color.blue;
+        Gizmos.DrawLine(transform.position, Camera.main.transform.position);
+        
+        Vector3 left = new Vector3(xRange, transform.position.y, transform.position.z);
+
+        Vector3 right = new Vector3(-xRange, transform.position.y, transform.position.z);
+
+        Gizmos.DrawLine (left, right);
+
+        //Gizmos.DrawLine(new Vector3(xRange, transform.position.y, transform.position.z), new Vector3(-xRange, transform.position.y,transform.position.z));
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(left, 0.5f);
+        Gizmos.DrawSphere(right, 0.5f);
 
     }
 }
+
